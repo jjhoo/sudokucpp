@@ -94,45 +94,60 @@ namespace sudoku
 
     typedef std::vector<cell> cells_t;
 
-    class cellops {
+    class cellgetter {
     public:
-        cellops(std::function<cells_t()> allop,
-                std::function<cells_t(index_t)> boxop,
-                std::function<cells_t(index_t)> colop,
-                std::function<cells_t(index_t)> rowop) {
-            get_all_op = allop;
-            get_box_op = boxop;
-            get_col_op = colop;
-            get_row_op = rowop;
+        cellgetter(std::function<cells_t()> all,
+                   std::function<bool(const cell &, index_t)> boxfilter,
+                   std::function<bool(const cell &, index_t)> colfilter,
+                   std::function<bool(const cell &, index_t)> rowfilter) {
+            get_all_fun = all;
+            get_box_filter = boxfilter;
+            get_col_filter = colfilter;
+            get_row_filter = rowfilter;
         }
 
         const cells_t get_all() const {
-            return this->get_all_op();
+            return this->get_all_fun();
         }
 
         const cells_t get_box(index_t i) const {
-            // printf("%s, %d\n", __FILE__, __LINE__);
-            return this->get_box_op(i);
+            auto all = this->get_all();
+            cells_t res;
+            std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
+                         [this,i](const cell & c) {
+                             return this->get_box_filter(c, i);
+                         });
+
+            return res;
         }
 
         const cells_t get_column(index_t i) const {
-            // printf("%s, %d\n", __FILE__, __LINE__);
-            return this->get_col_op(i);
+            auto all = this->get_all();
+            cells_t res;
+            std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
+                         [this,i](const cell & c) {
+                             return this->get_col_filter(c, i);
+                         });
+            return res;
         }
 
         const cells_t get_row(index_t i) const {
-            // printf("%s, %d\n", __FILE__, __LINE__);
-            return this->get_row_op(i);
+            auto all = this->get_all();
+            cells_t res;
+            std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
+                         [this,i](const cell & c) {
+                             return this->get_row_filter(c, i);
+                         });
+
+            return res;
         }
 
     protected:
-        std::function<cells_t()> get_all_op;
-        std::function<cells_t(index_t)> get_box_op;
-        std::function<cells_t(index_t)> get_col_op;
-        std::function<cells_t(index_t)> get_row_op;
+        std::function<cells_t()> get_all_fun;
+        std::function<bool(const cell &, index_t)> get_box_filter;
+        std::function<bool(const cell &, index_t)> get_col_filter;
+        std::function<bool(const cell &, index_t)> get_row_filter;
     };
-
-    typedef const cells_t (cellops::*CellUnitFun)(index_t i);
 
     struct EliminatorResult
     {
@@ -143,16 +158,14 @@ namespace sudoku
     class Eliminator
     {
     public:
-        virtual EliminatorResult eliminate(const cellops & solved,
-                                           const cellops & candidates) = 0;
+        virtual EliminatorResult eliminate(const cellgetter & solved,
+                                           const cellgetter & candidates) = 0;
     };
 
     class SimpleSinglesEliminator : public Eliminator {
     public:
-        virtual EliminatorResult eliminate(const cellops & solved,
-                                           const cellops & candidates) {
-            printf("%s, %d\n", __FILE__, __LINE__);
-
+        virtual EliminatorResult eliminate(const cellgetter & solved,
+                                           const cellgetter & candidates) {
             std::map<position, cells_t> pos_cell_map;
             EliminatorResult result;
 
@@ -172,20 +185,19 @@ namespace sudoku
 
     class SinglesEliminator : public Eliminator {
     public:
-        virtual EliminatorResult eliminate(const cellops & solved,
-                                           const cellops & candidates) {
-            printf("%s, %d\n", __FILE__, __LINE__);
+        virtual EliminatorResult eliminate(const cellgetter & solved,
+                                           const cellgetter & candidates) {
             EliminatorResult result;
 
-            auto ops = {
-                &cellops::get_row,
-                &cellops::get_column,
-                &cellops::get_box
+            auto getters = {
+                &cellgetter::get_row,
+                &cellgetter::get_column,
+                &cellgetter::get_box
             };
 
             for (index_t i = 1; i <= SUDOKU_NUMBERS; i++) {
-                for (auto op: ops) {
-                    auto set = (candidates.*op)(i);
+                for (auto getter: getters) {
+                    auto set = (candidates.*getter)(i);
                     std::map<index_t, cells_t> value_cell_map;
 
                     for (auto c: set) {
@@ -258,77 +270,17 @@ namespace sudoku
                 new SinglesEliminator(),
             };
 
-            auto solvedops = cellops(
-                [&]() {
-                    return this->solved;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->solved.cbegin(), this->solved.cend(), back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.box == i;
-                                 }
-                        );
-                    return res;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->solved.cbegin(), this->solved.cend(), back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.column == i;
-                                 }
-                        );
-                    return res;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->solved.cbegin(), this->solved.cend(), back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.row == i;
-                                 }
-                        );
-                    return res;
-                }
-                );
+            auto solvedgetters = cellgetter(
+                [&]() { return this->solved; },
+                [&](const cell & c, index_t i) { return c.pos.box == i; },
+                [&](const cell & c, index_t i) { return c.pos.column == i; },
+                [&](const cell & c, index_t i) { return c.pos.row == i; });
 
-            auto candops = cellops(
-                [&]() {
-                    return this->candidates;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->candidates.cbegin(),
-                                 this->candidates.cend(),
-                                 back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.box == i;
-                                 }
-                        );
-                    return res;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->candidates.cbegin(),
-                                 this->candidates.cend(),
-                                 back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.column == i;
-                                 }
-                        );
-                    return res;
-                },
-                [&](index_t i) {
-                    cells_t res;
-                    std::copy_if(this->candidates.cbegin(),
-                                 this->candidates.cend(),
-                                 back_inserter(res),
-                                 [i](const cell & c) {
-                                     return c.pos.row == i;
-                                 }
-                        );
-                    return res;
-                }
-                );
+            auto candgetters = cellgetter(
+                [&]() { return this->candidates; },
+                [&](const cell & c, index_t i) { return c.pos.box == i; },
+                [&](const cell & c, index_t i) { return c.pos.column == i; },
+                [&](const cell & c, index_t i) { return c.pos.row == i; });
 
             bool progress = false;
 
@@ -338,7 +290,7 @@ namespace sudoku
                 progress = false;
 
                 for (auto elim: eliminators) {
-                    auto result = elim->eliminate(solvedops, candops);
+                    auto result = elim->eliminate(solvedgetters, candgetters);
 
                     if (result.solved.size() > 0) {
                         update_solved(result.solved);
