@@ -25,6 +25,9 @@
 #include <cstdio>
 #include <cstdint>
 
+#include <ace/OS.h>
+#include <ace/Trace.h>
+
 namespace sudoku
 {
     typedef uint8_t index_t;
@@ -111,6 +114,8 @@ namespace sudoku
         }
 
         const cells_t get_box(index_t i) const {
+            ACE_TRACE(ACE_TEXT("cellgetter::get_box"));
+
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
@@ -122,6 +127,8 @@ namespace sudoku
         }
 
         const cells_t get_column(index_t i) const {
+            ACE_TRACE(ACE_TEXT("cellgetter::get_column"));
+
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
@@ -132,6 +139,8 @@ namespace sudoku
         }
 
         const cells_t get_row(index_t i) const {
+            ACE_TRACE(ACE_TEXT("cellgetter::get_row"));
+
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
@@ -166,6 +175,8 @@ namespace sudoku
     public:
         virtual EliminatorResult eliminate(const cellgetter & solved,
                                            const cellgetter & candidates) {
+            ACE_TRACE(ACE_TEXT("SimpleSinglesEliminator::eliminate"));
+
             std::map<position, cells_t> pos_cell_map;
             EliminatorResult result;
 
@@ -187,6 +198,8 @@ namespace sudoku
     public:
         virtual EliminatorResult eliminate(const cellgetter & solved,
                                            const cellgetter & candidates) {
+            ACE_TRACE(ACE_TEXT("SinglesEliminator::eliminate"));
+
             EliminatorResult result;
 
             auto getters = {
