@@ -102,11 +102,11 @@ namespace sudoku
         cellgetter(std::function<cells_t()> all,
                    std::function<bool(const cell &, index_t)> boxfilter,
                    std::function<bool(const cell &, index_t)> colfilter,
-                   std::function<bool(const cell &, index_t)> rowfilter) {
+                   std::function<bool(const cell &, index_t)> rowfilter)
+            : get_box_filter(boxfilter),
+              get_col_filter(colfilter),
+              get_row_filter(rowfilter) {
             get_all_fun = all;
-            get_box_filter = boxfilter;
-            get_col_filter = colfilter;
-            get_row_filter = rowfilter;
         }
 
         const cells_t get_all() const {
@@ -295,12 +295,10 @@ namespace sudoku
                 [&](const cell & c, index_t i) { return c.pos.column == i; },
                 [&](const cell & c, index_t i) { return c.pos.row == i; });
 
-            bool progress = false;
-
             while (true) {
-                printf("candidates left: %lu\n", candidates.size());
+                printf("candidates left: %zu\n", candidates.size());
 
-                progress = false;
+                bool progress = false;
 
                 for (auto elim: eliminators) {
                     auto result = elim->eliminate(solvedgetters, candgetters);
