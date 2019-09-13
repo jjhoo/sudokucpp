@@ -28,6 +28,9 @@
 #include <ace/OS.h>
 #include <ace/Trace.h>
 
+#include "combinations.h"
+#include "permutations.h"
+
 namespace sudoku
 {
     typedef uint8_t index_t;
