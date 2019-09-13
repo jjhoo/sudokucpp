@@ -158,78 +158,80 @@ namespace sudoku
         std::function<bool(const cell &, index_t)> get_row_filter;
     };
 
-    struct EliminatorResult
-    {
-        cells_t solved;
-        cells_t eliminated;
-    };
+    namespace eliminator {
+        struct Result
+        {
+            cells_t solved;
+            cells_t eliminated;
+        };
 
-    class Eliminator
-    {
-    public:
-        virtual EliminatorResult eliminate(const cellgetter & solved,
-                                           const cellgetter & candidates) = 0;
-    };
+        class Eliminator
+        {
+        public:
+            virtual Result eliminate(const cellgetter & solved,
+                                     const cellgetter & candidates) = 0;
+        };
 
-    class SimpleSinglesEliminator : public Eliminator {
-    public:
-        virtual EliminatorResult eliminate(const cellgetter & solved,
-                                           const cellgetter & candidates) {
-            ACE_TRACE(ACE_TEXT("SimpleSinglesEliminator::eliminate"));
+        class SimpleSingles : public Eliminator {
+        public:
+            virtual Result eliminate(const cellgetter & solved,
+                                     const cellgetter & candidates) {
+                ACE_TRACE(ACE_TEXT("SimpleSingles::eliminate"));
 
-            std::map<position, cells_t> pos_cell_map;
-            EliminatorResult result;
+                std::map<position, cells_t> pos_cell_map;
+                Result result;
 
-            for (auto c: candidates.get_all()) {
-                pos_cell_map[c.pos].push_back(c);
-            }
-
-            for (auto pc: pos_cell_map) {
-                if (pc.second.size() == 1) {
-                    result.solved.push_back(pc.second[0]);
+                for (auto c: candidates.get_all()) {
+                    pos_cell_map[c.pos].push_back(c);
                 }
-            }
 
-            return result;
-        }
-    };
-
-    class SinglesEliminator : public Eliminator {
-    public:
-        virtual EliminatorResult eliminate(const cellgetter & solved,
-                                           const cellgetter & candidates) {
-            ACE_TRACE(ACE_TEXT("SinglesEliminator::eliminate"));
-
-            EliminatorResult result;
-
-            auto getters = {
-                &cellgetter::get_row,
-                &cellgetter::get_column,
-                &cellgetter::get_box
-            };
-
-            for (index_t i = 1; i <= SUDOKU_NUMBERS; i++) {
-                for (auto getter: getters) {
-                    auto set = (candidates.*getter)(i);
-                    std::map<index_t, cells_t> value_cell_map;
-
-                    for (auto c: set) {
-                        value_cell_map[c.value].push_back(c);
+                for (auto pc: pos_cell_map) {
+                    if (pc.second.size() == 1) {
+                        result.solved.push_back(pc.second[0]);
                     }
+                }
 
-                    for (auto pc: value_cell_map) {
-                        if (pc.second.size() == 1) {
-                            result.solved.push_back(pc.second[0]);
+                return result;
+            }
+        };
+
+        class Singles : public Eliminator {
+        public:
+            virtual Result eliminate(const cellgetter & solved,
+                                     const cellgetter & candidates) {
+                ACE_TRACE(ACE_TEXT("Singles::eliminate"));
+
+                Result result;
+
+                auto getters = {
+                    &cellgetter::get_row,
+                    &cellgetter::get_column,
+                    &cellgetter::get_box
+                };
+
+                for (index_t i = 1; i <= SUDOKU_NUMBERS; i++) {
+                    for (auto getter: getters) {
+                        auto set = (candidates.*getter)(i);
+                        std::map<index_t, cells_t> value_cell_map;
+
+                        for (auto c: set) {
+                            value_cell_map[c.value].push_back(c);
+                        }
+
+                        for (auto pc: value_cell_map) {
+                            if (pc.second.size() == 1) {
+                                result.solved.push_back(pc.second[0]);
+                            }
                         }
                     }
                 }
+
+                // printf("solved\n");
+                // for (auto c: result.solved) c.dump();
+
+                return result;
             }
-
-            // printf("solved\n");
-            // for (auto c: result.solved) c.dump();
-
-            return result;
-        }
+        };
     };
 
     class solver
@@ -278,9 +280,9 @@ namespace sudoku
         }
 
         virtual void solve() {
-            std::vector<Eliminator *> eliminators = {
-                new SimpleSinglesEliminator(),
-                new SinglesEliminator(),
+            std::vector<eliminator::Eliminator *> eliminators = {
+                new eliminator::SimpleSingles(),
+                new eliminator::Singles(),
             };
 
             auto solvedgetters = cellgetter(
