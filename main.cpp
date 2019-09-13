@@ -359,12 +359,8 @@ namespace sudoku
         }
 
         virtual void update_solved(const cells_t & cells) {
-            printf("%lu\n", cells.size());
-
             for (auto c1: cells) {
                 auto idx = (c1.pos.row - 1) * SUDOKU_NUMBERS + (c1.pos.column - 1);
-                printf("%d %d %d %d\n", idx, c1.pos.row, c1.pos.column, c1.value);
-
                 cell & c = this->solved[idx];
                 // c.dump(); c1.dump();
 
