@@ -14,6 +14,8 @@
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+#include <memory>
+
 #include "sudoku.h"
 #include "eliminators.h"
 
@@ -62,10 +64,8 @@ Solver::pretty_print() const {
 void
 Solver::solve()
 {
-    std::vector<eliminator::Eliminator *> eliminators = {
-        new eliminator::SimpleSingles(),
-        new eliminator::Singles(),
-    };
+    add_eliminator(new eliminator::SimpleSingles());
+    add_eliminator(new eliminator::Singles());
 
     auto solvedgetters = cellgetter(
         [&]() { return this->solved; },
@@ -181,4 +181,18 @@ Solver::update_solved(
                 candidates.end());
         }
     }
+}
+
+void
+Solver::add_eliminator(
+    std::shared_ptr<eliminator::Eliminator> e)
+{
+    this->eliminators.push_back(e);
+}
+
+void
+Solver::add_eliminator(
+    eliminator::Eliminator * e)
+{
+    this->add_eliminator(std::shared_ptr<eliminator::Eliminator>(e));
 }

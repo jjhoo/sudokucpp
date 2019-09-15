@@ -21,6 +21,7 @@
 #include <functional>
 #include <list>
 #include <map>
+#include <memory>
 #include <set>
 #include <stdexcept>
 #include <string>
@@ -162,6 +163,10 @@ namespace sudoku
         std::function<bool(const cell &, index_t)> get_row_filter;
     };
 
+    namespace eliminator {
+        class Eliminator;
+    }
+
     class Solver
     {
     public:
@@ -179,8 +184,12 @@ namespace sudoku
         virtual void remove_solved(const cells_t & cells);
         virtual void update_solved(const cells_t & cells);
 
+        virtual void add_eliminator(std::shared_ptr<eliminator::Eliminator>);
+        virtual void add_eliminator(eliminator::Eliminator *);
+
         cells_t candidates;
         cells_t solved;
+        std::vector<std::shared_ptr<eliminator::Eliminator>> eliminators;
     };
 }
 
