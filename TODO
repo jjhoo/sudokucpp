@@ -1,0 +1,6 @@
+* ACE library should be optional
+* combination and permutation code could be more idiomatic C++
+   now a translation from go code
+* Implement more finders
+* Add testing
+   maybe googletest?
