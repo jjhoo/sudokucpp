@@ -44,16 +44,16 @@ namespace sudoku
     const index_t SUDOKU_COLUMNS = SUDOKU_NUMBERS;
     const index_t SUDOKU_ROWS = SUDOKU_NUMBERS;
 
-    struct position
+    struct Position
     {
-        position(index_t r, index_t c) {
+        Position(index_t r, index_t c) {
             this->row = r;
             this->column = c;
 
             this->box = (((r - 1) / 3) * 3 + ((c - 1) / 3)) + 1;
         }
 
-        bool operator<(const position & other) const {
+        bool operator<(const Position & other) const {
             if (this->row == other.row) {
                 return this->column < other.column;
             }
@@ -61,23 +61,23 @@ namespace sudoku
             return this->row < other.row;
         }
 
-        bool operator==(const position & other) const {
+        bool operator==(const Position & other) const {
             return this->row == other.row && this->column == other.column;
         }
 
-        bool eq_row(const position & other) const {
+        bool eq_row(const Position & other) const {
             return this->row == other.row;
         }
 
-        bool eq_column(const position & other) const {
+        bool eq_column(const Position & other) const {
             return this->column == other.column;
         }
 
-        bool eq_box(const position & other) const {
+        bool eq_box(const Position & other) const {
             return this->box == other.box;
         }
 
-        bool sees(const position & other) {
+        bool sees(const Position & other) {
             return (eq_row(other) || eq_column(other) || eq_box(other));
         }
 
@@ -86,9 +86,9 @@ namespace sudoku
         index_t box;
     };
 
-    struct cell
+    struct Cell
     {
-        cell(sudoku::position p, index_t v) : pos(p.row, p.column)  {
+        Cell(sudoku::Position p, index_t v) : pos(p.row, p.column)  {
             this->value = v;
         }
 
@@ -96,18 +96,18 @@ namespace sudoku
             printf("Cell %d %d %d\n", pos.row, pos.column, value);
         }
 
-        position    pos;
+        Position    pos;
         index_t     value;
     };
 
-    typedef std::vector<cell> cells_t;
+    typedef std::vector<Cell> cells_t;
 
-    class cellgetter {
+    class CellGetter {
     public:
-        cellgetter(std::function<cells_t()> all,
-                   std::function<bool(const cell &, index_t)> boxfilter,
-                   std::function<bool(const cell &, index_t)> colfilter,
-                   std::function<bool(const cell &, index_t)> rowfilter)
+        CellGetter(std::function<cells_t()> all,
+                   std::function<bool(const Cell &, index_t)> boxfilter,
+                   std::function<bool(const Cell &, index_t)> colfilter,
+                   std::function<bool(const Cell &, index_t)> rowfilter)
             : get_box_filter(boxfilter),
               get_col_filter(colfilter),
               get_row_filter(rowfilter) {
@@ -119,12 +119,12 @@ namespace sudoku
         }
 
         const cells_t get_box(index_t i) const {
-            ACE_TRACE(ACE_TEXT("cellgetter::get_box"));
+            ACE_TRACE(ACE_TEXT("CellGetter::get_box"));
 
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
-                         [this,i](const cell & c) {
+                         [this,i](const Cell & c) {
                              return this->get_box_filter(c, i);
                          });
 
@@ -132,24 +132,24 @@ namespace sudoku
         }
 
         const cells_t get_column(index_t i) const {
-            ACE_TRACE(ACE_TEXT("cellgetter::get_column"));
+            ACE_TRACE(ACE_TEXT("CellGetter::get_column"));
 
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
-                         [this,i](const cell & c) {
+                         [this,i](const Cell & c) {
                              return this->get_col_filter(c, i);
                          });
             return res;
         }
 
         const cells_t get_row(index_t i) const {
-            ACE_TRACE(ACE_TEXT("cellgetter::get_row"));
+            ACE_TRACE(ACE_TEXT("CellGetter::get_row"));
 
             auto all = this->get_all();
             cells_t res;
             std::copy_if(all.cbegin(), all.cend(), back_inserter(res),
-                         [this,i](const cell & c) {
+                         [this,i](const Cell & c) {
                              return this->get_row_filter(c, i);
                          });
 
@@ -158,9 +158,9 @@ namespace sudoku
 
     protected:
         std::function<cells_t()> get_all_fun;
-        std::function<bool(const cell &, index_t)> get_box_filter;
-        std::function<bool(const cell &, index_t)> get_col_filter;
-        std::function<bool(const cell &, index_t)> get_row_filter;
+        std::function<bool(const Cell &, index_t)> get_box_filter;
+        std::function<bool(const Cell &, index_t)> get_col_filter;
+        std::function<bool(const Cell &, index_t)> get_row_filter;
     };
 
     namespace eliminator {
@@ -192,6 +192,5 @@ namespace sudoku
         std::vector<std::shared_ptr<eliminator::Eliminator>> eliminators;
     };
 }
-
 
 #endif

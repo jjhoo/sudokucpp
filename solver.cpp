@@ -67,17 +67,17 @@ Solver::solve()
     add_eliminator(new eliminator::SimpleSingles());
     add_eliminator(new eliminator::Singles());
 
-    auto solvedgetters = cellgetter(
+    auto solvedgetters = CellGetter(
         [&]() { return this->solved; },
-        [&](const cell & c, index_t i) { return c.pos.box == i; },
-        [&](const cell & c, index_t i) { return c.pos.column == i; },
-        [&](const cell & c, index_t i) { return c.pos.row == i; });
+        [&](const Cell & c, index_t i) { return c.pos.box == i; },
+        [&](const Cell & c, index_t i) { return c.pos.column == i; },
+        [&](const Cell & c, index_t i) { return c.pos.row == i; });
 
-    auto candgetters = cellgetter(
+    auto candgetters = CellGetter(
         [&]() { return this->candidates; },
-        [&](const cell & c, index_t i) { return c.pos.box == i; },
-        [&](const cell & c, index_t i) { return c.pos.column == i; },
-        [&](const cell & c, index_t i) { return c.pos.row == i; });
+        [&](const Cell & c, index_t i) { return c.pos.box == i; },
+        [&](const Cell & c, index_t i) { return c.pos.column == i; },
+        [&](const Cell & c, index_t i) { return c.pos.row == i; });
 
     while (true) {
         printf("candidates left: %zu\n", candidates.size());
@@ -121,7 +121,7 @@ Solver::init_solved(
         back_inserter(solved),
         [&row, &col](const char & c) {
             index_t val = c - '0';
-            auto ncell = cell(position(row, col), val);
+            auto ncell = Cell(Position(row, col), val);
 
             col++;
             if (col > SUDOKU_NUMBERS) {
@@ -138,7 +138,7 @@ Solver::init_candidates()
     for (auto c: solved) {
         if (c.value == 0) {
             for (index_t n = 1; n <= SUDOKU_NUMBERS; n++) {
-                candidates.push_back(cell(c.pos, n));
+                candidates.push_back(Cell(c.pos, n));
             }
         }
     }
@@ -152,7 +152,7 @@ Solver::remove_solved(
         if (c1.value != 0) {
             candidates.erase(
                 std::remove_if(candidates.begin(), candidates.end(),
-                               [&c1](const cell & c2) {
+                               [&c1](const Cell & c2) {
                                    return c1.value == c2.value && c1.pos.sees(c2.pos);
                                }),
                 candidates.end());
@@ -166,7 +166,7 @@ Solver::update_solved(
 {
     for (auto c1: cells) {
         auto idx = (c1.pos.row - 1) * SUDOKU_NUMBERS + (c1.pos.column - 1);
-        cell & c = this->solved[idx];
+        Cell & c = this->solved[idx];
         // c.dump(); c1.dump();
 
         if (c.value == 0) {
@@ -174,7 +174,7 @@ Solver::update_solved(
 
             candidates.erase(
                 std::remove_if(candidates.begin(), candidates.end(),
-                               [&c](const cell & c2) {
+                               [&c](const Cell & c2) {
                                    return (c.value == c2.value && c.pos.sees(c2.pos))
                                        || (c.value != c2.value && c.pos == c2.pos);
                                }),

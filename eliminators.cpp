@@ -23,11 +23,11 @@ using namespace sudoku::eliminator;
 
 Result
 SimpleSingles::eliminate(
-    const cellgetter & solved,
-    const cellgetter & candidates) {
+    const CellGetter & solved,
+    const CellGetter & candidates) {
     ACE_TRACE(ACE_TEXT("SimpleSingles::eliminate"));
 
-    std::map<position, cells_t> pos_cell_map;
+    std::map<Position, cells_t> pos_cell_map;
     Result result;
 
     for (auto c: candidates.get_all()) {
@@ -45,16 +45,16 @@ SimpleSingles::eliminate(
 
 Result
 Singles::eliminate(
-    const cellgetter & solved,
-    const cellgetter & candidates) {
+    const CellGetter & solved,
+    const CellGetter & candidates) {
     ACE_TRACE(ACE_TEXT("Singles::eliminate"));
 
     Result result;
 
     auto getters = {
-        &cellgetter::get_row,
-        &cellgetter::get_column,
-        &cellgetter::get_box
+        &CellGetter::get_row,
+        &CellGetter::get_column,
+        &CellGetter::get_box
     };
 
     for (index_t i = 1; i <= SUDOKU_NUMBERS; i++) {

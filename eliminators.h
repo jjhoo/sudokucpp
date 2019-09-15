@@ -30,20 +30,20 @@ namespace sudoku {
         class Eliminator
         {
         public:
-            virtual Result eliminate(const cellgetter & solved,
-                                     const cellgetter & candidates) = 0;
+            virtual Result eliminate(const CellGetter & solved,
+                                     const CellGetter & candidates) = 0;
         };
 
         class SimpleSingles : public Eliminator {
         public:
-            virtual Result eliminate(const cellgetter & solved,
-                                     const cellgetter & candidates);
+            virtual Result eliminate(const CellGetter & solved,
+                                     const CellGetter & candidates);
         };
 
         class Singles : public Eliminator {
         public:
-            virtual Result eliminate(const cellgetter & solved,
-                                     const cellgetter & candidates);
+            virtual Result eliminate(const CellGetter & solved,
+                                     const CellGetter & candidates);
         };
     }
 }
