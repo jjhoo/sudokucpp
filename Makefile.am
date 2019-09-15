@@ -7,6 +7,8 @@ libsudokucpp_la_SOURCES = \
 	eliminators.cpp \
 	solver.cpp
 
+libsudokucpp_la_CPPFLAGS = $(ACE_CFLAGS)
+libsudokucpp_la_LIBADD = $(ACE_LIBS)
 libsudokucpp_la_includedir = .
 libsudokucpp_la_include_HEADERS = \
 	combinations.h \
