@@ -5,7 +5,8 @@ bin_PROGRAMS = test
 
 libsudokucpp_la_SOURCES = \
 	eliminators.cpp \
-	solver.cpp
+	solver.cpp \
+	sudoku.cpp
 
 libsudokucpp_la_CPPFLAGS = $(ACE_CFLAGS)
 libsudokucpp_la_LIBADD = $(ACE_LIBS)

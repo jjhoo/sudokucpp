@@ -14,6 +14,7 @@
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
+#include <iostream>
 #include <memory>
 
 #include "sudoku.h"
@@ -34,31 +35,31 @@ Solver::Solver(
 
 void
 Solver::pretty_print() const {
-    printf("+-------------------+\n");
+    std::cout << "+-------------------+" << std::endl;
 
     int i = 0;
 
     for (auto cell: this->solved) {
         if ((i + 1) % 9 == 1) {
-            printf("| ");
+            std::cout << "| ";
         }
 
         if (cell.value == 0) {
-            printf(".");
+            std::cout << ".";
         } else {
-            printf("%d", cell.value);
+            std::cout << static_cast<int>(cell.value);
         }
 
         if ((i + 1) % 9 == 0) {
-            printf(" |\n");
+            std::cout << " |" << std::endl;
         } else {
-            printf(" ");
+            std::cout << " ";
         }
 
         i++;
     }
 
-    printf("+-------------------+\n");
+    std::cout << "+-------------------+" << std::endl;
 }
 
 void
@@ -80,7 +81,7 @@ Solver::solve()
         [&](const Cell & c, index_t i) { return c.pos.row == i; });
 
     while (true) {
-        printf("candidates left: %zu\n", candidates.size());
+        std::cout << "candidates left: " << candidates.size() << std::endl;
 
         bool progress = false;
 

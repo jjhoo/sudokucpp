@@ -27,7 +27,6 @@
 #include <string>
 #include <vector>
 
-#include <cstdio>
 #include <cstdint>
 
 #include <ace/OS.h>
@@ -92,9 +91,7 @@ namespace sudoku
             this->value = v;
         }
 
-        void dump(void) const {
-            printf("Cell %d %d %d\n", pos.row, pos.column, value);
-        }
+        void dump(void) const;
 
         Position    pos;
         index_t     value;

@@ -14,30 +14,16 @@
 //  You should have received a copy of the GNU Affero General Public License
 //  along with this program.  If not, see <http://www.gnu.org/licenses/>.
 //
-
 #include <iostream>
 
 #include "sudoku.h"
-#include "combinations.h"
 
-int main(void)
+
+void
+sudoku::Cell::dump(void) const
 {
-    auto puzzle = sudoku::Solver(
-        "000040700500780020070002006810007900460000051009600078900800010080064009002050000");
-
-    puzzle.pretty_print();
-
-    auto cands = puzzle.get_candidates();
-    std::cout << "candidates left: " <<  cands.size() << std::endl;
-
-    // for (auto c: cands) c.dump();
-
-    {
-        puzzle.solve();
-        auto cands = puzzle.get_candidates();
-        std::cout << "candidates left: " << cands.size() << std::endl;
-        puzzle.pretty_print();
-    }
-
-    return 0;
+    std::cout << "Cell " << static_cast<int>(pos.row)
+              << " " << static_cast<int>(pos.column)
+              << " " << static_cast<int>(value)
+        << std::endl;
 }

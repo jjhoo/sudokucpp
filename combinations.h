@@ -40,10 +40,6 @@ namespace sudoku {
 
                 this->cjs.push_back(length);
                 this->cjs.push_back(0);
-
-                for (auto n: this->cjs) {
-                    printf("%ld\n", n);
-                }
             }
 
             std::vector<ssize_t> visit() {
