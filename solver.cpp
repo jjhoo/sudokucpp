@@ -149,22 +149,25 @@ void
 Solver::remove_solved(
     const cells_t & cells)
 {
+    auto nend = candidates.end();
+
     for (auto c1: cells) {
         if (c1.value != 0) {
-            candidates.erase(
-                std::remove_if(candidates.begin(), candidates.end(),
-                               [&c1](const Cell & c2) {
-                                   return c1.value == c2.value && c1.pos.sees(c2.pos);
-                               }),
-                candidates.end());
+            nend = std::remove_if(candidates.begin(), nend,
+                                  [&c1](const Cell & c2) {
+                                      return c1.value == c2.value && c1.pos.sees(c2.pos);
+                                  });
         }
     }
+    candidates.erase(nend, candidates.end());
 }
 
 void
 Solver::update_solved(
     const cells_t & cells)
 {
+    auto nend = candidates.end();
+
     for (auto c1: cells) {
         auto idx = (c1.pos.row - 1) * SUDOKU_NUMBERS + (c1.pos.column - 1);
         Cell & c = this->solved[idx];
@@ -173,15 +176,14 @@ Solver::update_solved(
         if (c.value == 0) {
             c.value = c1.value;
 
-            candidates.erase(
-                std::remove_if(candidates.begin(), candidates.end(),
-                               [&c](const Cell & c2) {
-                                   return (c.value == c2.value && c.pos.sees(c2.pos))
-                                       || (c.value != c2.value && c.pos == c2.pos);
-                               }),
-                candidates.end());
+            nend = std::remove_if(candidates.begin(), nend,
+                                 [&c](const Cell & c2) {
+                                     return (c.value == c2.value && c.pos.sees(c2.pos))
+                                     || (c.value != c2.value && c.pos == c2.pos);
+                                 });
         }
     }
+    candidates.erase(nend, candidates.end());
 }
 
 void
