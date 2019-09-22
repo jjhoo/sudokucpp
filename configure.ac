@@ -7,7 +7,7 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE
 LT_INIT([disable-fast-install, win32-dll])
 
-AC_CONFIG_SRCDIR([solver.cpp])
+AC_CONFIG_SRCDIR([sudokucpp/solver.cpp])
 AC_CONFIG_HEADER([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -31,5 +31,7 @@ AC_HEADER_STDC
 
 AC_CONFIG_FILES([
     Makefile
+    sudokucpp/Makefile
+    tests/Makefile
 ])
 AC_OUTPUT

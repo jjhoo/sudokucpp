@@ -17,8 +17,8 @@
 
 #include <iostream>
 
-#include "sudoku.h"
-#include "combinations.h"
+#include "sudokucpp/sudoku.h"
+#include "sudokucpp/combinations.h"
 
 int main(void)
 {
