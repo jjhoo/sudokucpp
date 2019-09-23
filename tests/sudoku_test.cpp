@@ -16,11 +16,11 @@
 //
 
 #include <iostream>
+#include <gtest/gtest.h>
 
 #include "sudokucpp/sudoku.h"
-#include "sudokucpp/combinations.h"
 
-int main(void)
+TEST(SudokuTest, SolvePuzzle1)
 {
     auto puzzle = sudoku::Solver(
         "000040700500780020070002006810007900460000051009600078900800010080064009002050000");
@@ -29,15 +29,15 @@ int main(void)
 
     auto cands = puzzle.get_candidates();
     std::cout << "candidates left: " <<  cands.size() << std::endl;
+    EXPECT_EQ(cands.size(), 163) << "Expected 163 candidates left, got " << cands.size();
 
-    // for (auto c: cands) c.dump();
+    puzzle.solve();
+    cands = puzzle.get_candidates();
+    EXPECT_EQ(cands.size(), 77) << "Expected 77 candidates left, got " << cands.size();
+}
 
-    {
-        puzzle.solve();
-        auto cands = puzzle.get_candidates();
-        std::cout << "candidates left: " << cands.size() << std::endl;
-        puzzle.pretty_print();
-    }
-
-    return 0;
+int main(int argc, char *argv[])
+{
+    testing::InitGoogleTest(&argc, argv);
+    return RUN_ALL_TESTS();
 }

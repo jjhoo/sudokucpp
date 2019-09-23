@@ -1,3 +1,3 @@
 AUTOMAKE_OPTIONS = foreign
 
-SUBDIRS = sudokucpp tests
+SUBDIRS = sudokucpp googletest tests

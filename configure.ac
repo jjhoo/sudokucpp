@@ -14,7 +14,13 @@ AC_CONFIG_MACRO_DIR([m4])
 AC_PROG_CXX
 AC_PROG_CC
 
-CXXFLAGS='-O2 -Wall -std=c++14'
+AC_LANG([C])
+AC_LANG([C++])
+AX_CXX_COMPILE_STDCXX_14(noext, mandatory)
+
+AC_LANG_PUSH([C++])
+CXXFLAGS="-Wall -Werror -std=c++14"
+AC_LANG_POP
 
 PKG_CHECK_MODULES(ACE, [ACE >= 6.4.0])
 
@@ -34,4 +40,5 @@ AC_CONFIG_FILES([
     sudokucpp/Makefile
     tests/Makefile
 ])
+AC_CONFIG_SUBDIRS([googletest])
 AC_OUTPUT
