@@ -119,7 +119,7 @@ else
 endif
 
 # Build rules for libraries.
-lib_LTLIBRARIES = lib/libgtest.la lib/libgtest_main.la
+lib_LTLIBRARIES = lib/libgtest.la
 
 lib_libgtest_la_SOURCES = src/gtest-all.cc
 
@@ -151,29 +151,6 @@ pkginclude_internal_HEADERS = \
   include/gtest/internal/custom/gtest.h \
   include/gtest/internal/custom/gtest-port.h \
   include/gtest/internal/custom/gtest-printers.h
-
-lib_libgtest_main_la_SOURCES = src/gtest_main.cc
-lib_libgtest_main_la_LIBADD = lib/libgtest.la
-
-# Bulid rules for samples and tests. Automake's naming for some of
-# these variables isn't terribly obvious, so this is a brief
-# reference:
-#
-# TESTS -- Programs run automatically by "make check"
-# check_PROGRAMS -- Programs built by "make check" but not necessarily run
-
-TESTS=
-TESTS_ENVIRONMENT = GTEST_SOURCE_DIR="$(srcdir)/test" \
-                    GTEST_BUILD_DIR="$(top_builddir)/test"
-check_PROGRAMS=
-
-# This tests most constructs of gtest and verifies that libgtest_main
-# and libgtest work.
-TESTS += test/gtest_all_test
-check_PROGRAMS += test/gtest_all_test
-test_gtest_all_test_SOURCES = test/gtest_all_test.cc
-test_gtest_all_test_LDADD = lib/libgtest_main.la \
-                            lib/libgtest.la
 
 # Tests that fused gtest files compile and work.
 FUSED_GTEST_SRC = \
