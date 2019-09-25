@@ -22,7 +22,12 @@ AC_LANG_PUSH([C++])
 CXXFLAGS="-Wall -Werror -std=c++14"
 AC_LANG_POP
 
-PKG_CHECK_MODULES(ACE, [ACE >= 6.4.0])
+AC_ARG_WITH([ace], AS_HELP_STRING([--with-ace], [Build with the ACE library]))
+AS_IF([test x$with_ace = xyes], [
+   PKG_CHECK_MODULES([ACE], [ACE >= 6.4.0],
+                     [AC_DEFINE([HAVE_LIBACE], [1], [Use ACE])],
+                     [AC_DEFINE([HAVE_LIBACE], [0], [Do not ACE])])
+])
 
 AC_CHECK_HEADERS([stdint.h])
 

@@ -1,0 +1,10 @@
+dist: bionic
+language: cpp
+
+addons:
+  apt:
+    packages:
+      - autoconf-archive
+
+script:
+  - autoreconf -fvi && ./configure && make && make check

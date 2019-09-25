@@ -29,8 +29,13 @@
 
 #include <cstdint>
 
+#if HAVE_LIBACE
 #include <ace/OS.h>
 #include <ace/Trace.h>
+#else
+#define ACE_TRACE(x)
+#define ACE_TEXT(x)
+#endif
 
 namespace sudoku
 {
