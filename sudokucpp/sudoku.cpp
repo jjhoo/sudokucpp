@@ -16,8 +16,8 @@
 //
 #include <iostream>
 
+#include "config.h"
 #include "sudoku.h"
-
 
 void
 sudoku::Cell::dump(void) const

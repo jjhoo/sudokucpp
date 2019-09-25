@@ -29,11 +29,11 @@ TEST(SudokuTest, SolvePuzzle1)
 
     auto cands = puzzle.get_candidates();
     std::cout << "candidates left: " <<  cands.size() << std::endl;
-    EXPECT_EQ(cands.size(), 163) << "Expected 163 candidates left, got " << cands.size();
+    EXPECT_EQ(cands.size(), 163U) << "Expected 163 candidates left, got " << cands.size();
 
     puzzle.solve();
     cands = puzzle.get_candidates();
-    EXPECT_EQ(cands.size(), 77) << "Expected 77 candidates left, got " << cands.size();
+    EXPECT_EQ(cands.size(), 77U) << "Expected 77 candidates left, got " << cands.size();
 }
 
 int main(int argc, char *argv[])
