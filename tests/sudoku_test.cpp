@@ -1,5 +1,5 @@
 // -*- C++ -*-
-// Copyright (c) 2019 Jani J. Hakala <jjhakala@gmail.com> Tampere, Finland
+// Copyright (c) 2019 Jani J. Hakala <jjhakala@gmail.com> Finland
 //
 //  This program is free software: you can redistribute it and/or modify
 //  it under the terms of the GNU Affero General Public License as
